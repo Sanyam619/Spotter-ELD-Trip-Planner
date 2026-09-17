@@ -4,6 +4,12 @@ Full-stack trip planner for property-carrying commercial drivers. Enter a trip a
 the route, the rest/fuel stops required by the FMCSA hours-of-service rules, and fully drawn
 daily log sheets.
 
+**Live app:** <https://spotter-eld-trip-planner-rho.vercel.app>
+**API:** <https://spotter-eld-api-btrl.onrender.com/api/health>
+
+> The API is on Render's free tier and sleeps after 15 minutes of inactivity. The first request
+> after a cold start can take around 50 seconds; subsequent requests are fast.
+
 **Stack:** Django 5.1 + Django REST Framework · Next.js 16 + React 19 + Tailwind 4 · Leaflet ·
 OpenRouteService
 
