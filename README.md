@@ -106,7 +106,7 @@ Open <http://localhost:3000>.
 ### Tests
 
 ```bash
-cd backend && pytest
+pytest
 ```
 
 17 tests covering the HOS engine and the API. The routing layer is stubbed, so the suite needs
