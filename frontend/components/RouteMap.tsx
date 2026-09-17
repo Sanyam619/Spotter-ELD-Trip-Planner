@@ -2,7 +2,8 @@
 
 import "leaflet/dist/leaflet.css";
 
-import { useEffect } from "react";
+import { latLngBounds } from "leaflet";
+import { useEffect, useMemo } from "react";
 import { CircleMarker, MapContainer, Polyline, TileLayer, Tooltip, useMap } from "react-leaflet";
 
 import { STOP_STYLES, formatClock, formatHours } from "@/lib/duty";
@@ -16,15 +17,23 @@ const toLatLng = (coords: [number, number]): LatLng => [coords[1], coords[0]];
 function FitBounds({ positions }: { positions: LatLng[] }) {
   const map = useMap();
   useEffect(() => {
-    if (positions.length > 1) {
-      map.fitBounds(positions, { padding: [40, 40] });
-    }
+    if (positions.length < 2) return;
+    const bounds = latLngBounds(positions);
+    // The container has no final size on first paint. Fitting before it settles
+    // leaves the map centred on the wrong place in production builds, where
+    // effects run once instead of twice under StrictMode.
+    const frame = requestAnimationFrame(() => {
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [40, 40] });
+    });
+    return () => cancelAnimationFrame(frame);
   }, [map, positions]);
   return null;
 }
 
 export default function RouteMap({ plan }: { plan: TripPlan }) {
-  const line = plan.route.geometry.map(toLatLng);
+  // Stable identity keeps the fit-bounds effect from re-running every render.
+  const line = useMemo(() => plan.route.geometry.map(toLatLng), [plan.route.geometry]);
   const waypoints = [
     { label: `Start — ${plan.trip.current.label}`, coords: plan.trip.current.coordinates },
     { label: `Pickup — ${plan.trip.pickup.label}`, coords: plan.trip.pickup.coordinates },
