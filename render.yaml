@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: spotter-eld-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # Set in the Render dashboard, not committed.
+      - key: ORS_API_KEY
+        sync: false
+      # Comma-separated Vercel origins, e.g. https://your-app.vercel.app
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
